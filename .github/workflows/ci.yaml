@@ -15,7 +15,7 @@ jobs:
         users: actions/checkout@v2
       - name: Set Short SHA
         run: |
-          echo "SHORT_SHA=${echo ${GIHUB_SHA} | cut -c1-7}" >> $GITHUB_ENV
+          echo "SHORT_SHA=${echo ${GITHUB_SHA} | cut -c1-7}" >> $GITHUB_ENV
       - name: Build Docker Image
         run: |
           docker build -t ramzihaj2001/complete-devops-project:${{ env.SHORT_SHA }} .
