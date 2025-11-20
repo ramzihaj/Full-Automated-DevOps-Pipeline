@@ -10,26 +10,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
       - name: Set Short SHA
         run: |
           echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
+
       - name: Build Docker Image
         run: |
           docker build -t ramzihaj2001/complete-devops-project:${{ env.SHORT_SHA }} -f terraform-configs/Dockerfile .
+        working-directory: .
+
       - name: Login to DockerHub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
       - name: Push to Dockerhub
         run: |
-          docker push ramzihaj2001/complete-devops-project:${{ env.SHORT_SHA }}  
-      -name: Configure Git
+          docker push ramzihaj2001/complete-devops-project:${{ env.SHORT_SHA }}
+
+      - name: Configure Git
         run: |
           git config --global user.name "github-actions"
-          git config --global user.email "
+          git config --global user.email "actions@github.com"
+
       - name: Update Helm Chart with New Image Tag
         run: |
           sed -i "s/tag: .*/tag: ${{ env.SHORT_SHA }}/" helm-chart/complete-devops-project/values.yaml
           git add helm-chart/complete-devops-project/values.yaml
           git commit -m "Update image tag to ${{ env.SHORT_SHA }}"
-          git push origin main      
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
