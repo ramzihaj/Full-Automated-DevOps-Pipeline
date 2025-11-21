@@ -1,18 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata: 
-  name: complete-devops-project
+  name: time-printer-app
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: "https://github.com/ramzihaj/Full-Automated-DevOps-Pipeline"
+    repoURL: "https://github.com/ramzihaj/Full-Automated-DevOps-Pipeline.git"
     targetRevision: HEAD
-    path: "helm-chart/complete-devops-project"
+    path: "complete-devops-project-time-printer"
+    helm:
+      valueFiles:
+        - values.yaml
   destination:
     server: "https://kubernetes.default.svc"
     namespace: default
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true  
+      selfHeal: true
